@@ -1,0 +1,7 @@
+.vs/
+Debug/
+Release/
+x64/
+NumberConverter.csproj.user
+NumberConverter.vcxproj.user
+NumberConverter.VC.VC.opendb
