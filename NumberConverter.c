@@ -32,24 +32,28 @@ int k_strlen(char *str) {
 }
 
 char k_chartoupper(char character) {
-
     int a = character;
     char charupper = a;
     if (a >= 97 && a <= 172) {
         charupper = a - 32;
     }
     return charupper;
-
 }
 
-char *k_toupper(char *str) {
-    int len = k_strlen(str);
-    char *upper = (char *)malloc(sizeof(char) * len);
-    for (int i = 0; i < len; i++) {
-        upper[i] = k_chartoupper(str[i]);
+void k_strcopy(char *str, char *output) {
+    int i = 0;
+    for (; *str != '\0'; str++) {
+        output[i++] = *str;
     }
-    upper[len] = '\0';
-    return upper;
+    output[i] = '\0';
+}
+
+void k_toupper(char *str, char *output) {
+    int i = 0;
+    for (; *str != '\0'; str++) {
+        output[i++] = k_chartoupper(*str);
+    }
+    output[i] = '\0';
 }
 
 int k_strcmp(char *str, char *str1) {
@@ -61,7 +65,6 @@ int k_strcmp(char *str, char *str1) {
     }
     return *str - *str1;
 }
-
 
 int get_char_index(char *str, char character) {
     int len = k_strlen(str);
@@ -128,11 +131,9 @@ void dec2other(double dec, char *map, int base, char *output) {
         output[stri++] = map[mult];
 
         number -= mult * power;
-
-
     }
-    output[stri] = '\0';
 
+    output[stri] = '\0';
 }
 
 
@@ -148,11 +149,10 @@ int main(int argc, char* argv[]) {
     char *format = argv[1];
     char *inpstr = argv[2];
 
-    double number = 0;
-    char *hexnumber = malloc(sizeof(char) * 1024);
-    char *binnumber = malloc(sizeof(char) * 1024);
-    char *octnumber = malloc(sizeof(char) * 1024);
-
+    double number = 0.0;
+    char hexnumber[1024] = { 0 };
+    char binnumber[1024] = { 0 };
+    char octnumber[1024] = { 0 };
 
 
     if (k_strcmp(format, "dec") == 0) {
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
     else if (k_strcmp(format, "hex") == 0) {
 
         number = other2dec(inpstr, hexstr, hexbase);
-        hexnumber = inpstr;
+        k_strcopy(inpstr, hexnumber);
         dec2other(number, binstr, binbase, binnumber);
         dec2other(number, octstr, octbase, octnumber);
 
@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
 
         number = other2dec(inpstr, binstr, binbase);
         dec2other(number, hexstr, hexbase, hexnumber);
-        binnumber = inpstr;
+        k_strcopy(inpstr, binnumber);
         dec2other(number, octstr, octbase, octnumber);
 
     }
@@ -198,7 +198,6 @@ int main(int argc, char* argv[]) {
     printf("hex: %s\n", hexnumber);
     printf("binary: %s\n", binnumber);
     printf("octal: %s\n", octnumber);
-
 
     return 0;
 }
