@@ -31,14 +31,6 @@ int k_strlen(char *str) {
     return l;
 }
 
-char k_chartoupper(char character) {
-    int a = character;
-    char charupper = a;
-    if (a >= 97 && a <= 172) {
-        charupper = a - 32;
-    }
-    return charupper;
-}
 
 void k_strcopy(char *str, char *output) {
     int i = 0;
@@ -48,13 +40,6 @@ void k_strcopy(char *str, char *output) {
     output[i] = '\0';
 }
 
-void k_toupper(char *str, char *output) {
-    int i = 0;
-    for (; *str != '\0'; str++) {
-        output[i++] = k_chartoupper(*str);
-    }
-    output[i] = '\0';
-}
 
 int k_strcmp(char *str, char *str1) {
 
