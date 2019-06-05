@@ -29,15 +29,14 @@ int k_strlen(char *str) {
     return l;
 }
 
-
-void k_strcopy(char *str, char *output) {
-    int i = 0;
-    for (; *str != '\0'; str++) {
-        output[i++] = *str;
+char k_chartoupper(char character) {
+    int a = character;
+    char charupper = a;
+    if (a >= 'a' && a <= 'z') {
+        charupper = a - 32;
     }
-    output[i] = '\0';
+    return charupper;
 }
-
 
 int k_strcmp(char *str, char *str1) {
 
@@ -62,7 +61,7 @@ int get_char_index(char *str, char character) {
 }
 
 
-double other2dec(char *str, char *map, int base) {
+double other2dec(char *str, char *map, int forceupper, int base) {
 
     int len = k_strlen(str);
 
@@ -80,7 +79,13 @@ double other2dec(char *str, char *map, int base) {
             continue;
         }
 
-        int match = get_char_index(map, str[i]);
+        int match = -1;
+        if (forceupper)
+            match = get_char_index(map, k_chartoupper(str[i]));
+        else
+            match = get_char_index(map, str[i]);
+
+
         if (match == -1) {
             return 0.0;
         }
@@ -104,7 +109,7 @@ void dec2other(double dec, char *map, int base, char *output) {
         if (power > number && number == dec)
             continue;
 
-        if (power > number && i < 0 && number <= 0.000001)
+        if (power > number && i < 0 && number < pow(10, -decimals))
             break;
 
         int mult = number / power;
@@ -131,6 +136,7 @@ int main(int argc, char* argv[]) {
 
     char *format = argv[1];
     char *inpstr = argv[2];
+    int ilen = k_strlen(inpstr);
 
     double number = 0.0;
     char hexnumber[1024] = { 0 };
@@ -141,47 +147,36 @@ int main(int argc, char* argv[]) {
 
     if (k_strcmp(format, "dec") == 0) {
 
-        //number = (double)strtod(inpstr, NULL);
         number = (double)atof(inpstr);
-        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
-        number = (double)atof(numnumber);
-
-        dec2other(number, hexstr, hexbase, hexnumber);
-        dec2other(number, binstr, binbase, binnumber);
-        dec2other(number, octstr, octbase, octnumber);
 
     }
     else if (k_strcmp(format, "hex") == 0) {
 
-        number = other2dec(inpstr, hexstr, hexbase);
-        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
-        number = (double)atof(numnumber);
+        int x0 = 0;
+        char inpstr2[1024] = { 0 };
 
-        k_strcopy(inpstr, hexnumber);
-        dec2other(number, binstr, binbase, binnumber);
-        dec2other(number, octstr, octbase, octnumber);
+        if (ilen > 2) {
+            if (inpstr[0] == '0' && k_chartoupper(inpstr[1]) == 'X') {
+                x0 = 1;
+                for (int i = 2; i < ilen; i++)
+                    inpstr2[i - 2] = inpstr[i];
+            }
+        }
+
+        if(x0)
+            number = other2dec(inpstr2, hexstr, 1, hexbase);
+        else
+            number = other2dec(inpstr, hexstr, 1, hexbase);
 
     }
     else if (k_strcmp(format, "bin") == 0) {
 
-        number = other2dec(inpstr, binstr, binbase);
-        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
-        number = (double)atof(numnumber);
-
-        dec2other(number, hexstr, hexbase, hexnumber);
-        k_strcopy(inpstr, binnumber);
-        dec2other(number, octstr, octbase, octnumber);
+        number = other2dec(inpstr, binstr, 0, binbase);
 
     }
     else if (k_strcmp(format, "oct") == 0) {
 
-        number = other2dec(inpstr, octstr, octbase);
-        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
-        number = (double)atof(numnumber);
-
-        dec2other(number, hexstr, hexbase, hexnumber);
-        dec2other(number, binstr, binbase, binnumber);
-        dec2other(number, octstr, octbase, octnumber);
+        number = other2dec(inpstr, octstr, 0, octbase);
 
     } 
     else {
@@ -191,6 +186,13 @@ int main(int argc, char* argv[]) {
 
     }
 
+    //round the number to the specified number of decimal places
+    sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+    number = (double)atof(numnumber);
+
+    dec2other(number, hexstr, hexbase, hexnumber);
+    dec2other(number, binstr, binbase, binnumber);
+    dec2other(number, octstr, octbase, octnumber);
 
 
     int rnum = decimals;
