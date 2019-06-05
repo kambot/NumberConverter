@@ -141,6 +141,7 @@ int main(int argc, char* argv[]) {
 
     if (k_strcmp(format, "dec") == 0) {
 
+        //number = (double)strtod(inpstr, NULL);
         number = (double)atof(inpstr);
         sprintf_s(numnumber, 1024, "%.*f", decimals, number);
         number = (double)atof(numnumber);
@@ -190,8 +191,19 @@ int main(int argc, char* argv[]) {
 
     }
 
-    sprintf_s(numnumber, 1024, "%.*f", decimals, number);
-    printf("decimal: %s\n", numnumber);
+
+
+    int rnum = decimals;
+    for (int i = k_strlen(numnumber) - 1; i >= 0; i--) {
+        if (numnumber[i] == '.')
+            break;
+        if (numnumber[i] != '0')
+            break;
+        else
+            rnum -= 1;
+    }
+
+    printf("decimal: %.*f\n", rnum, number);
     printf("hex: %s\n", hexnumber);
     printf("binary: %s\n", binnumber);
     printf("octal: %s\n", octnumber);
