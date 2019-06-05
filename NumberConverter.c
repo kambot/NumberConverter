@@ -3,6 +3,8 @@
 #include <math.h>
 
 
+#define decimals 6
+
 const char *hexstr = "0123456789ABCDEF";
 const char *binstr = "01";
 const char *octstr = "01234567";
@@ -12,15 +14,11 @@ const int binbase = 2;
 const int octbase = 8;
 
 
-
 void print_help(char *argv0) {
     printf("syntax:\n%s <type> <value>\n\n", argv0);
     printf("type options are:\n dec (decimal)\n hex (hexadecimal)\n bin (binary)\n oct (octal)\n\n");
     printf("value:\nthe value that you want converted to the other formats\n");
 }
-
-
-
 
 int k_strlen(char *str) {
     int l = 0;
@@ -106,7 +104,7 @@ void dec2other(double dec, char *map, int base, char *output) {
         if (power > number && number == dec)
             continue;
 
-        if (power > number && i < 0 && number <= 0.00000001)
+        if (power > number && i < 0 && number <= 0.000001)
             break;
 
         int mult = number / power;
@@ -138,11 +136,15 @@ int main(int argc, char* argv[]) {
     char hexnumber[1024] = { 0 };
     char binnumber[1024] = { 0 };
     char octnumber[1024] = { 0 };
+    char numnumber[1024] = { 0 };
 
 
     if (k_strcmp(format, "dec") == 0) {
 
         number = (double)atof(inpstr);
+        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+        number = (double)atof(numnumber);
+
         dec2other(number, hexstr, hexbase, hexnumber);
         dec2other(number, binstr, binbase, binnumber);
         dec2other(number, octstr, octbase, octnumber);
@@ -151,6 +153,9 @@ int main(int argc, char* argv[]) {
     else if (k_strcmp(format, "hex") == 0) {
 
         number = other2dec(inpstr, hexstr, hexbase);
+        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+        number = (double)atof(numnumber);
+
         k_strcopy(inpstr, hexnumber);
         dec2other(number, binstr, binbase, binnumber);
         dec2other(number, octstr, octbase, octnumber);
@@ -159,6 +164,9 @@ int main(int argc, char* argv[]) {
     else if (k_strcmp(format, "bin") == 0) {
 
         number = other2dec(inpstr, binstr, binbase);
+        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+        number = (double)atof(numnumber);
+
         dec2other(number, hexstr, hexbase, hexnumber);
         k_strcopy(inpstr, binnumber);
         dec2other(number, octstr, octbase, octnumber);
@@ -167,6 +175,9 @@ int main(int argc, char* argv[]) {
     else if (k_strcmp(format, "oct") == 0) {
 
         number = other2dec(inpstr, octstr, octbase);
+        sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+        number = (double)atof(numnumber);
+
         dec2other(number, hexstr, hexbase, hexnumber);
         dec2other(number, binstr, binbase, binnumber);
         dec2other(number, octstr, octbase, octnumber);
@@ -179,7 +190,8 @@ int main(int argc, char* argv[]) {
 
     }
 
-    printf("decimal: %lf\n", number);
+    sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+    printf("decimal: %s\n", numnumber);
     printf("hex: %s\n", hexnumber);
     printf("binary: %s\n", binnumber);
     printf("octal: %s\n", octnumber);
