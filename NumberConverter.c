@@ -2,16 +2,17 @@
 #include <stdlib.h>
 #include <math.h>
 
+//gcc NumberConverter.c -o NumberConverter -lm
 
-#define decimals 6
+#define DECIMALS 6
 
-const char *hexstr = "0123456789ABCDEF";
-const char *binstr = "01";
-const char *octstr = "01234567";
+char *hexstr = "0123456789ABCDEF";
+char *binstr = "01";
+char *octstr = "01234567";
 
-const int hexbase = 16;
-const int binbase = 2;
-const int octbase = 8;
+int hexbase = 16;
+int binbase = 2;
+int octbase = 8;
 
 
 void print_help(char *argv0) {
@@ -109,7 +110,7 @@ void dec2other(double dec, char *map, int base, char *output) {
         if (power > number && number == dec)
             continue;
 
-        if (power > number && i < 0 && number < pow(10, -decimals))
+        if (power > number && i < 0 && number < pow(10, - DECIMALS))
             break;
 
         int mult = number / power;
@@ -187,7 +188,7 @@ int main(int argc, char* argv[]) {
     }
 
     //round the number to the specified number of decimal places
-    sprintf_s(numnumber, 1024, "%.*f", decimals, number);
+    snprintf(numnumber, 1024, "%.*f", DECIMALS, number);
     number = (double)atof(numnumber);
 
     dec2other(number, hexstr, hexbase, hexnumber);
@@ -195,7 +196,7 @@ int main(int argc, char* argv[]) {
     dec2other(number, octstr, octbase, octnumber);
 
 
-    int rnum = decimals;
+    int rnum = DECIMALS;
     for (int i = k_strlen(numnumber) - 1; i >= 0; i--) {
         if (numnumber[i] == '.')
             break;
